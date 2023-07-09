@@ -1,0 +1,4 @@
+python-dotenv==0.21.0
+openpyxl==2.6.4
+loguru==0.7.0
+requests~=2.26.0
