@@ -33,10 +33,16 @@ def get_xlsx_file_path(directory: Path):
 
 
 def get_vacancy_id_by_name(vacancies: list, vacancy_name: str):
-    vacancy_id = ''
-
     for vacancy in vacancies:
-        pprint(vacancy)
+        position: str = vacancy.get("position")
+        vacancy_id: int = vacancy.get("id")
+
+        if position.strip().lower() != vacancy_name.strip().lower():
+            continue
+
+        return vacancy_id
+
+    return
 
 
 def get_vacancies(
@@ -86,24 +92,23 @@ def main():
         "Row",
         column_name,
     )
-    # TOKEN = a841c687571a510970a1cbf1dac44c987cbd0c287b487eb54e4d8daed5f29537
+
     load_dotenv()
     org_id = os.environ["ORG_ID"]
     base_url = os.environ["URL"]
 
     vacancies = get_vacancies(base_url, org_id, hf_token)
 
-    pprint(len(vacancies))
+    for candidate_id, candidate in enumerate(candidates, 1):
+        current_row = Row(*candidate)
+        file_path = Path.joinpath(db_path, current_row.position)
+        candidate_file = get_candidate_file_path(file_path, current_row.full_name)
+        vacancy_id = get_vacancy_id_by_name(vacancies, current_row.position)
+        logger.info("Processing candidate: {}. "
+                    "File path: {}. Vacancy id: {}".format(current_row.full_name.strip(),
+                                           candidate_file, vacancy_id))
 
-    # get_vacancy_id(all_vacancies, "Frontend-разработчик")
-
-    # for candidate_id, candidate in enumerate(candidates, 1):
-    #     current_row = Row(*candidate)
-    #     file_path = Path.joinpath(argv.db_path, current_row.position)
-    #     candidate_file = get_candidate_file_path(file_path, current_row.full_name)
-    #     logger.info("Processing candidate: {}. "
-    #                 "File path: {}".format(current_row.full_name.strip(),
-    #                                        candidate_file))
+        logger.info("Candidate processed.")
 
 
 if __name__ == '__main__':
