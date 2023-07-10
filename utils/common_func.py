@@ -53,3 +53,10 @@ def get_args():
     argv = parser.parse_args()
 
     return argv.token, argv.db_path
+
+
+def get_xlsx_file_path(directory: Path):
+    for file in directory.iterdir():
+        if file.suffix == ".xlsx":
+            return file
+    raise FileNotFoundError
