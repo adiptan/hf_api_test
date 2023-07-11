@@ -66,7 +66,6 @@ def main():
 
     load_dotenv()
 
-    org_id: str = os.environ["ORG_ID"]
     base_url: str = os.environ["URL"]
     hf_token: str = os.environ["TOKEN"]
 
@@ -74,6 +73,12 @@ def main():
         "Authorization": f"Bearer {hf_token}",
     }
     params = {}
+
+    try:
+        org_id = get_hf_data(base_url, "accounts", headers, params).get("items")[0].get("id")
+    except requests.exceptions.RequestException as error:
+        logger.error(f"Error found while get account id: {error}")
+        return
 
     try:
         vacancies = get_vacancies(base_url, org_id, headers)
@@ -138,7 +143,7 @@ def main():
                 vacancy_body,
             )
         except requests.exceptions.RequestException as error:
-            logger.error(f"Error found while create vacancy: {error}")
+            logger.error(f"Error found while add candidate on vacancy: {error}")
             return
 
         logger.info("Candidate processed.")
