@@ -1,23 +1,16 @@
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Union
 
 from utils.hf_api import get_hf_data, upload_file
 
 
 def prepare_vacancy_body(
-    base_url: str,
     vacancies: list,
     position: str,
-    status_id: str,
+    status_id: int,
     comment: str,
-    org_id: str,
-    headers: dict,
-    candidate_file: Path,
-):
+) -> Optional[dict[str, Union[list[dict], str, int]]]:
     vacancy_id: int = get_vacancy_id_by_name(vacancies, position)
-    uploaded_file_id: dict = upload_file(
-        base_url, f"accounts/{org_id}/upload", headers, candidate_file
-    ).get("id")
 
     if not vacancy_id:
         return
@@ -26,7 +19,6 @@ def prepare_vacancy_body(
         "vacancy": vacancy_id,
         "status": status_id,
         "comment": comment,
-        "files": [uploaded_file_id],
     }
 
     return vacancy_body
@@ -50,7 +42,6 @@ def get_vacancies(
     org_id: str,
     headers: dict,
 ) -> list:
-
     params = {
         "page": 1,
     }
@@ -75,7 +66,7 @@ def get_vacancy_status_id(
     org_id: str,
     headers: dict,
     search_status: str,
-):
+) -> Optional[int]:
     params = {}
     end_point = f"accounts/{org_id}/vacancies/statuses"
     statuses = get_hf_data(base_url, end_point, headers, params)["items"]
