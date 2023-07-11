@@ -39,12 +39,6 @@ def get_args():
         description="The script interact with huntflow API to upload applicants into it."
     )
     parser.add_argument(
-        "--token",
-        type=str,
-        required=True,
-        help="HF api token.",
-    )
-    parser.add_argument(
         "--db_path",
         type=Path,
         required=True,
@@ -52,7 +46,7 @@ def get_args():
     )
     argv = parser.parse_args()
 
-    return argv.token, argv.db_path
+    return argv.db_path
 
 
 def get_xlsx_file_path(directory: Path):
