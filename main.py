@@ -7,7 +7,12 @@ import requests
 from dotenv import load_dotenv
 from loguru import logger
 
-from utils.common_func import get_cells, get_args, get_xlsx_file_path, read_progress_file
+from utils.common_func import (
+    get_cells,
+    get_args,
+    get_xlsx_file_path,
+    read_progress_file,
+)
 from utils.hf_api import post_request, upload_file, get_hf_data
 from utils.applicant_func import (
     prepare_candidate_body,
@@ -37,7 +42,6 @@ def main():
         return
 
     progress_file = Path("progress.txt")
-    # progress_file.write_text(str(2))
 
     start_message = "------Start candidates import------"
     row_number = 2

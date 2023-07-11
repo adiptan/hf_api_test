@@ -64,7 +64,6 @@ def get_vacancy_status_id(
     statuses: list,
     search_status: str,
 ) -> Optional[int]:
-
     for status in statuses:
         status_name: str = status.get("name").strip()
         status_id: int = status.get("id")
