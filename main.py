@@ -85,10 +85,7 @@ def main():
         )
 
         vacancy_body = prepare_vacancy_body(
-            vacancies,
-            current_row.position,
-            status_id,
-            current_row.comment
+            vacancies, current_row.position, status_id, current_row.comment
         )
 
         if not vacancy_body:
