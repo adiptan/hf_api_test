@@ -6,9 +6,7 @@ from pathlib import Path
 
 
 def get_cells(
-    xlsx_filename: Path,
-    number_of_columns: int = 10,
-    start_row: int = 2
+    xlsx_filename: Path, number_of_columns: int = 10, start_row: int = 2
 ) -> Iterable[
     Tuple[str, str, Optional[str], Optional[str], str, str, str, str, str, str]
 ]:
@@ -36,7 +34,7 @@ def get_cells(
 def get_args():
     parser = argparse.ArgumentParser(
         prog="huntflow_import",
-        description="The script interact with huntflow API to upload applicants into it."
+        description="The script interact with huntflow API to upload applicants into it.",
     )
     parser.add_argument(
         "--db_path",

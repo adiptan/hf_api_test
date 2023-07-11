@@ -6,10 +6,10 @@ from loguru import logger
 
 
 def get_hf_data(
-        base_url: str,
-        end_point: str,
-        headers: dict,
-        params: dict,
+    base_url: str,
+    end_point: str,
+    headers: dict,
+    params: dict,
 ) -> dict:
     url = urljoin(base_url, end_point)
     try:
@@ -22,10 +22,10 @@ def get_hf_data(
 
 
 def post_request(
-        base_url: str,
-        end_point: str,
-        headers: dict,
-        body: dict,
+    base_url: str,
+    end_point: str,
+    headers: dict,
+    body: dict,
 ):
     url = urljoin(base_url, end_point)
     try:
@@ -38,10 +38,10 @@ def post_request(
 
 
 def upload_file(
-        base_url: str,
-        end_point: str,
-        headers: dict,
-        file_path: Path,
+    base_url: str,
+    end_point: str,
+    headers: dict,
+    file_path: Path,
 ):
     url = urljoin(base_url, end_point)
     filename = file_path.name
