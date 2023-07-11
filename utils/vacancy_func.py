@@ -61,14 +61,9 @@ def get_vacancies(
 
 
 def get_vacancy_status_id(
-    base_url: str,
-    org_id: str,
-    headers: dict,
+    statuses: list,
     search_status: str,
 ) -> Optional[int]:
-    params = {}
-    end_point = f"accounts/{org_id}/vacancies/statuses"
-    statuses = get_hf_data(base_url, end_point, headers, params)["items"]
 
     for status in statuses:
         status_name: str = status.get("name").strip()

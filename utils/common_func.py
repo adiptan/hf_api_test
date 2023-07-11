@@ -52,3 +52,9 @@ def get_xlsx_file_path(directory: Path):
         if file.suffix == ".xlsx":
             return file
     raise FileNotFoundError
+
+
+def read_progress_file(progress_file: Path) -> int:
+    with progress_file.open(mode="r", encoding="utf8") as file:
+        row_number = file.read()
+        return int(row_number)

@@ -7,8 +7,8 @@ import requests
 from dotenv import load_dotenv
 from loguru import logger
 
-from utils.common_func import get_cells, get_args, get_xlsx_file_path
-from utils.hf_api import post_request, upload_file
+from utils.common_func import get_cells, get_args, get_xlsx_file_path, read_progress_file
+from utils.hf_api import post_request, upload_file, get_hf_data
 from utils.applicant_func import (
     prepare_candidate_body,
     get_candidate_file_path,
@@ -36,7 +36,17 @@ def main():
         logger.error(f"There is no xlsx-file found in directory '{db_path}'. Exit.")
         return
 
-    candidates = get_cells(xlsx_file, 5, 2)
+    progress_file = Path("progress.txt")
+    # progress_file.write_text(str(2))
+
+    start_message = "------Start candidates import------"
+    row_number = 2
+
+    if progress_file.exists():
+        row_number += read_progress_file(progress_file)
+        start_message = f"------Start import row {row_number} ------"
+
+    candidates = get_cells(xlsx_file, 5, row_number)
 
     column_name = [
         "position",
@@ -52,13 +62,14 @@ def main():
 
     load_dotenv()
 
-    org_id = os.environ["ORG_ID"]
-    base_url = os.environ["URL"]
-    hf_token = os.environ["TOKEN"]
+    org_id: str = os.environ["ORG_ID"]
+    base_url: str = os.environ["URL"]
+    hf_token: str = os.environ["TOKEN"]
 
     headers = {
         "Authorization": f"Bearer {hf_token}",
     }
+    params = {}
 
     try:
         vacancies = get_vacancies(base_url, org_id, headers)
@@ -66,20 +77,30 @@ def main():
         logger.error(f"Error found while get vacancies: {error}")
         return
 
-    logger.info("------Start candidates import------")
+    try:
+        end_point = f"accounts/{org_id}/vacancies/statuses"
+        statuses = get_hf_data(base_url, end_point, headers, params).get("items")
+    except requests.exceptions.RequestException as error:
+        logger.error(f"Error found while get status_id: {error}")
+        return
 
-    for str_id, candidate in enumerate(candidates, 1):
+    logger.info(start_message)
+
+    for row_id, candidate in enumerate(candidates, 1):
         current_row = Row(*candidate)
 
         logger.info(
             "Processing string: {}, candidate: {}".format(
-                str_id,
+                row_id,
                 current_row.full_name.strip(),
             )
         )
 
+        progress_file.write_text(str(row_id))
+
         file_path = Path.joinpath(db_path, current_row.position)
         candidate_file = get_candidate_file_path(file_path, current_row.full_name)
+        status_id = get_vacancy_status_id(statuses, current_row.status)
 
         try:
             uploaded_file_id: int = upload_file(
@@ -101,14 +122,6 @@ def main():
             logger.error(f"Error found while create candidate: {error}")
             return
 
-        try:
-            status_id = get_vacancy_status_id(
-                base_url, org_id, headers, current_row.status
-            )
-        except requests.exceptions.RequestException as error:
-            logger.error(f"Error found while get status_id: {error}")
-            return
-
         vacancy_body = prepare_vacancy_body(
             vacancies, current_row.position, status_id, current_row.comment
         )
@@ -126,7 +139,9 @@ def main():
 
         logger.info("Candidate processed.")
 
-    logger.info("------Candidate import ended------")
+    logger.info("------Candidates import ended------")
+
+    progress_file.unlink()
 
 
 if __name__ == "__main__":
