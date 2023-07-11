@@ -1,7 +1,6 @@
-from pathlib import Path
 from typing import Optional, Union
 
-from utils.hf_api import get_hf_data, upload_file
+from utils.hf_api import get_hf_data
 
 
 def prepare_vacancy_body(
