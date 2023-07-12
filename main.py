@@ -87,8 +87,7 @@ def main():
         return
 
     try:
-        end_point = f"accounts/{org_id}/vacancies/statuses"
-        statuses = get_hf_data(base_url, end_point, headers, params).get("items")
+        statuses = get_hf_data(base_url, f"accounts/{org_id}/vacancies/statuses", headers, params).get("items")
     except requests.exceptions.RequestException as error:
         logger.error(f"Error found while get status_id: {error}")
         return
@@ -107,7 +106,7 @@ def main():
 
         progress_file.write_text(str(row_id))
 
-        file_path = Path.joinpath(db_path, current_row.position)
+        file_path: Path = Path.joinpath(db_path, current_row.position)
         candidate_file = get_candidate_file_path(file_path, current_row.full_name)
         status_id = get_vacancy_status_id(statuses, current_row.status)
 
